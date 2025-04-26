@@ -1,60 +1,65 @@
 pipeline {
-    agent {
-        kubernetes {
-            label 'any'
-            defaultContainer 'terraform'
-            yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: terraform
-    image: hashicorp/terraform:1.6.6
-    command: ["cat"]
-    tty: true
-  - name: git
-    image: alpine/git
-    command: ["cat"]
-    tty: true
-  - name: azure-cli
-    image: mcr.microsoft.com/azure-cli
-    command: ["cat"]
-    tty: true
-"""
-        }
-    }
+    agent none
 
     environment {
         VAULT_ADDR = 'http://192.168.1.199:32001/' // HashiCorp Vault address
     }
 
     stages {
-        stage('Clone Repo') {
-            steps {
-                container('git') {
-                    git branch: 'main', url: 'https://github.com/HamdiNOURI/IacAzure.git'
+        stage('Terraform') {
+            agent {
+                kubernetes {
+                    label 'terraform-agent'
+                    defaultContainer 'terraform'
+                    yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: terraform
+      image: hashicorp/terraform:1.6.6
+      command: [ "cat" ]
+      tty: true
+    - name: git
+      image: alpine/git
+      command: [ "cat" ]
+      tty: true
+    - name: azure-cli
+      image: mcr.microsoft.com/azure-cli
+      command: [ "cat" ]
+      tty: true
+"""
                 }
             }
-        }
+            stages {
+                stage('Clone Repo') {
+                    steps {
+                        container('git') {
+                            git branch: 'main', url: 'https://github.com/HamdiNOURI/IacAzure.git'
+                        }
+                    }
+                }
 
-        stage('Terraform Init & Plan') {
-            steps {
-                withVault([vaultSecrets: [[
-                    path: 'secret/data/azure/creds',
-                    engineVersion: 2,
-                    secretValues: [
-                        [envVar: 'ARM_CLIENT_ID',       vaultKey: 'client_id'],
-                        [envVar: 'ARM_CLIENT_SECRET',   vaultKey: 'client_secret'],
-                        [envVar: 'ARM_SUBSCRIPTION_ID', vaultKey: 'subscription_id'],
-                        [envVar: 'ARM_TENANT_ID',       vaultKey: 'tenant_id']
-                    ]
-                ]]]) {
-                    container('terraform') {
-                        sh '''
-                            terraform init
-                            terraform validate
-                            terraform plan -out=tfplan
-                        '''
+                stage('Terraform Init & Plan') {
+                    steps {
+                        withVault([vaultSecrets: [[
+                            path: 'secret/data/azure/creds',
+                            engineVersion: 2,
+                            secretValues: [
+                                [envVar: 'ARM_CLIENT_ID',       vaultKey: 'client_id'],
+                                [envVar: 'ARM_CLIENT_SECRET',   vaultKey: 'client_secret'],
+                                [envVar: 'ARM_SUBSCRIPTION_ID', vaultKey: 'subscription_id'],
+                                [envVar: 'ARM_TENANT_ID',       vaultKey: 'tenant_id']
+                            ]
+                        ]]]) {
+                            container('terraform') {
+                                sh '''
+                                    terraform init
+                                    terraform validate
+                                    terraform plan -out=tfplan
+                                '''
+                            }
+                        }
                     }
                 }
             }
@@ -62,22 +67,7 @@ spec:
 
         /*
         stage('Terraform Apply') {
-            steps {
-                withVault([vaultSecrets: [[
-                    path: 'secret/data/azure/creds',
-                    engineVersion: 2,
-                    secretValues: [
-                        [envVar: 'ARM_CLIENT_ID',       vaultKey: 'client_id'],
-                        [envVar: 'ARM_CLIENT_SECRET',   vaultKey: 'client_secret'],
-                        [envVar: 'ARM_SUBSCRIPTION_ID', vaultKey: 'subscription_id'],
-                        [envVar: 'ARM_TENANT_ID',       vaultKey: 'tenant_id']
-                    ]
-                ]]]) {
-                    container('terraform') {
-                        sh 'terraform apply -auto-approve tfplan'
-                    }
-                }
-            }
+            // Same pattern as above
         }
         */
     }
