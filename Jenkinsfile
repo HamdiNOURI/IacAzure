@@ -29,13 +29,13 @@ spec:
     }
 
     stages {
-        stage('Clone Repo') {
+/*        stage('Clone Repo') {
             steps {
                 container('git') {
                     git branch: 'master', url: 'https://github.com/HamdiNOURI/IacAzure.git'
                 }
             }
-        }
+        } */
 
         stage('Terraform Version') {
             steps {
