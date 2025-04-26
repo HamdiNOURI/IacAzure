@@ -12,14 +12,6 @@ spec:
       image: hashicorp/terraform:1.6.6
       command: [ "cat" ]
       tty: true
-    - name: git
-      image: alpine/git
-      command: [ "cat" ]
-      tty: true
-    - name: azure-cli
-      image: mcr.microsoft.com/azure-cli
-      command: [ "cat" ]
-      tty: true
 """
         }
     }
@@ -29,22 +21,11 @@ spec:
     }
 
     stages {
-/*        stage('Clone Repo') {
-            steps {
-                container('git') {
-                    git branch: 'master', url: 'https://github.com/HamdiNOURI/IacAzure.git'
-                }
-            }
-        } */
-
         stage('Terraform Version') {
             steps {
                 container('terraform') {
                     sh '''
                         terraform version
-                        # terraform init
-                        # terraform validate
-                        # terraform plan -out=tfplan
                     '''
                 }
             }
