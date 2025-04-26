@@ -31,7 +31,7 @@ spec:
 """
                 }
             }
-            stages {
+            //stages {
                 stage('Clone Repo') {
                     steps {
                         container('git') {
@@ -51,7 +51,7 @@ spec:
                         }
                     }
                 }
-            }
+            //}
         }
     }
 
