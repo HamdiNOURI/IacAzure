@@ -1,17 +1,9 @@
 pipeline {
-    agent none
-
-    environment {
-        VAULT_ADDR = 'http://192.168.1.199:32001/' // HashiCorp Vault address
-    }
-
-    stages {
-        stage('Terraform') {
-            agent {
-                kubernetes {
-                    label 'terraform-agent'
-                    defaultContainer 'terraform'
-                    yaml """
+    agent {
+        kubernetes {
+            label 'terraform-agent'
+            defaultContainer 'terraform'
+            yaml """
 apiVersion: v1
 kind: Pod
 spec:
@@ -29,29 +21,33 @@ spec:
       command: [ "cat" ]
       tty: true
 """
+        }
+    }
+
+    environment {
+        VAULT_ADDR = 'http://192.168.1.199:32001/' // HashiCorp Vault address
+    }
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                container('git') {
+                    git branch: 'master', url: 'https://github.com/HamdiNOURI/IacAzure.git'
                 }
             }
-            //stages {
-                stage('Clone Repo') {
-                    steps {
-                        container('git') {
-                            git branch: 'master', url: 'https://github.com/HamdiNOURI/IacAzure.git'
-                        }
-                    }
+        }
+
+        stage('Terraform Version') {
+            steps {
+                container('terraform') {
+                    sh '''
+                        terraform version
+                        # terraform init
+                        # terraform validate
+                        # terraform plan -out=tfplan
+                    '''
                 }
-                stage('Clone Repo') {
-                    steps {
-                            container('terraform') {
-                                sh '''
-                                    terraform version
-                                    #terraform init
-                                    #terraform validate
-                                    #terraform plan -out=tfplan
-                                '''
-                        }
-                    }
-                }
-            //}
+            }
         }
     }
 
