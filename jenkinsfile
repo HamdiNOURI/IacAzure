@@ -59,13 +59,14 @@ spec:
                 }
             }
         }
-
+/*
         stage('Manual Approval') {
             steps {
                 input message: 'Apply Terraform plan?'
             }
         }
-
+*/
+/*
         stage('Terraform Apply') {
             steps {
                 withVault([vaultSecrets: [[
@@ -83,7 +84,7 @@ spec:
                     }
                 }
             }
-        }
+        } */
     }
 
     post {
