@@ -1,7 +1,7 @@
 pipeline {
     agent {
         kubernetes {
-            label 'terraform-agent'
+            label 'any'
             defaultContainer 'terraform'
             yaml """
 apiVersion: v1
