@@ -39,7 +39,7 @@ spec:
                         }
                     }
                 }
-
+        /*
                 stage('Terraform Init & Plan') {
                     steps {
                         withVault([vaultSecrets: [[
@@ -66,7 +66,7 @@ spec:
             }
         }
 
-        /*
+
         stage('Terraform Apply') {
             // Same pattern as above
         }
