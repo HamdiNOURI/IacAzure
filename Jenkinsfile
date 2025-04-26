@@ -54,9 +54,10 @@ spec:
                         ]]]) {
                             container('terraform') {
                                 sh '''
-                                    terraform init
-                                    terraform validate
-                                    terraform plan -out=tfplan
+                                    terraform version
+                                    #terraform init
+                                    #terraform validate
+                                    #terraform plan -out=tfplan
                                 '''
                             }
                         }
