@@ -39,19 +39,8 @@ spec:
                         }
                     }
                 }
-        /*
-                stage('Terraform Init & Plan') {
+                stage('Clone Repo') {
                     steps {
-                        withVault([vaultSecrets: [[
-                            path: 'secret/data/azure/creds',
-                            engineVersion: 2,
-                            secretValues: [
-                                [envVar: 'ARM_CLIENT_ID',       vaultKey: 'client_id'],
-                                [envVar: 'ARM_CLIENT_SECRET',   vaultKey: 'client_secret'],
-                                [envVar: 'ARM_SUBSCRIPTION_ID', vaultKey: 'subscription_id'],
-                                [envVar: 'ARM_TENANT_ID',       vaultKey: 'tenant_id']
-                            ]
-                        ]]]) {
                             container('terraform') {
                                 sh '''
                                     terraform version
@@ -59,18 +48,11 @@ spec:
                                     #terraform validate
                                     #terraform plan -out=tfplan
                                 '''
-                            }
                         }
                     }
                 }
             }
         }
-
-
-        stage('Terraform Apply') {
-            // Same pattern as above
-        }
-        */
     }
 
     post {
