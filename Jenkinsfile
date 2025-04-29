@@ -46,18 +46,12 @@ podTemplate(
         ]) {
             sh'''
               cd VmOnPerm
-              ls -l
+              terraform init
+              sleep 2
+              terraform plan
             '''
         }
       }
     }
   }
-    post {
-      success {
-        echo 'Pipeline succeeded!'
-      }
-      failure {
-        echo 'Pipeline failed.'
-      }
-    }
 }
