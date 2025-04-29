@@ -51,6 +51,7 @@ podTemplate(
         }
       }
     }
+  }
     post {
       success {
         echo 'Pipeline succeeded!'
@@ -59,5 +60,4 @@ podTemplate(
         echo 'Pipeline failed.'
       }
     }
-  }
 }
