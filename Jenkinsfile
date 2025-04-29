@@ -45,7 +45,8 @@ podTemplate(
           ]]
         ]) {
             sh'''
-              echo Hello World
+              cd VmOnPerm
+              ls -l
             '''
         }
       }
