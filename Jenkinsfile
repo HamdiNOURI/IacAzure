@@ -27,7 +27,7 @@ podTemplate(
     stage('Terraform Version') {
       container('terraform') {
         sh 'terraform version'
-        //sh 'hostname'
+        sh 'ls -l'
         echo "Vault address is: ${env.VAULT_ADDR}"
       }
     }
@@ -45,8 +45,9 @@ podTemplate(
           ]]
         ]) {
             sh'''
-              cd VmOnPerm\
-              ls -lt
+              echo Hello World
+              #cd VmOnPerm\
+              #ls -lt
               #terraform init
               #terraform plan
           '''
