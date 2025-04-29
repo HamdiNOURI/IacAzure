@@ -51,9 +51,12 @@ podTemplate(
       }
     }
     post {
-        always {
-            echo "✅ Pipeline complete."
-        }
+      success {
+        echo 'Pipeline succeeded!'
+      }
+      failure {
+        echo 'Pipeline failed.'
+      }
     }
   }
 }
