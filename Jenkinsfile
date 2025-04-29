@@ -46,11 +46,7 @@ podTemplate(
         ]) {
             sh'''
               echo Hello World
-              #cd VmOnPerm\
-              #ls -lt
-              #terraform init
-              #terraform plan
-          '''
+            '''
         }
       }
     }
