@@ -46,8 +46,9 @@ podTemplate(
         ]) {
             sh'''
               cd VmOnPerm\
-              terraform init
-              terraform plan
+              ls -lt
+              #terraform init
+              #terraform plan
           '''
         }
       }
