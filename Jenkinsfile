@@ -1,41 +1,59 @@
-pipeline {
-    agent {
-        kubernetes {
-            label 'terraform-agent'
-            defaultContainer 'terraform'
-            yaml """
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-    - name: terraform
-      image: hashicorp/terraform:1.6.6
-      command: [ "cat" ]
-      tty: true
-    - name: jnlp
-      image: jenkins/inbound-agent:latest
-      args: ['\$(JENKINS_SECRET)', '\$(JENKINS_NAME)']
-"""
+podTemplate(
+  agentInjection: true,
+  containers: [
+    containerTemplate(
+      name: 'terraform',
+      image: 'hashicorp/terraform:1.10.0',
+      command: 'cat',
+      ttyEnabled: true
+    ),
+      containerTemplate(
+      name: 'git',
+      image: 'alpine/git',
+      command: 'cat',
+      ttyEnabled: true
+    )
+  ]
+) {
+  node(POD_LABEL) {
+    // Set environment variable at the node level (Groovy style)
+    env.VAULT_ADDR = 'http://192.168.1.199:32001/'
+    stage('Git Version') {
+      container('git') {
+        git branch: 'master', url: 'https://github.com/HamdiNOURI/IacAzure.git'
+        sh 'ls -l'
+      }
+    }
+    stage('Terraform Version') {
+      container('terraform') {
+        sh 'terraform version'
+        //sh 'hostname'
+        echo "Vault address is: ${env.VAULT_ADDR}"
+      }
+    }
+   
+    stage('Plan') {
+      container('terraform') {
+        withVault([
+          vaultSecrets: [[
+            path: 'secret/esxi',
+            engineVersion: 2,
+            secretValues: [
+              [envVar: 'ARM_USER',       vaultKey: 'user'],
+              [envVar: 'ARM_PASSWORD',   vaultKey: 'password']
+            ]
+          ]]
+        ]) {
+          cd VmOnPerm\
+          terraform init
+          terraform plan
         }
+      }
     }
-
-    environment {
-        VAULT_ADDR = 'http://192.168.1.199:32001/'
-    }
-
-    stages {
-        stage('Terraform Version') {
-            steps {
-                container('terraform') {
-                    sh 'terraform version'
-                }
-            }
-        }
-    }
-
     post {
         always {
             echo "✅ Pipeline complete."
         }
     }
+  }
 }
