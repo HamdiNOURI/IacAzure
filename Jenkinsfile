@@ -36,7 +36,7 @@ podTemplate(
       container('terraform') {
         withVault([
           vaultSecrets: [[
-            path: 'secret/data/esxi/admin',
+            path: 'secret/esxi/admin',
             engineVersion: 2,
             secretValues: [
               [envVar: 'ARM_USER',       vaultKey: 'user'],
@@ -46,8 +46,9 @@ podTemplate(
         ]) {
             sh'''
               cd VmOnPerm
+              terraform init
+              terraform plan
             '''
-            echo "Vault address is: ${env.ARM_USER}"
         }
       }
     }
