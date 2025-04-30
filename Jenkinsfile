@@ -36,7 +36,7 @@ podTemplate(
       container('terraform') {
         withVault([
           vaultSecrets: [[
-            path: 'secret/data/esxi',
+            path: 'secret/data/esxi/admin',
             engineVersion: 2,
             secretValues: [
               [envVar: 'ARM_USER',       vaultKey: 'user'],
