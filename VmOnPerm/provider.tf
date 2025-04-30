@@ -14,7 +14,7 @@ provider "vault" {
 provider "vsphere" {
   user                 = data.vault_kv_secret_v2.esxi.data["user"]
   password             = data.vault_kv_secret_v2.esxi.data["password"]
-  vsphere_server       = "myvcenter.kmea.local"
+  vsphere_server       = "192.168.1.190"
   allow_unverified_ssl = true
 }
 
