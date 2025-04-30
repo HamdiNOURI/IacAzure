@@ -32,25 +32,28 @@ podTemplate(
       }
     }
    
-    stage('Plan') {
-      container('terraform') {
-        withVault([
-          vaultSecrets: [[
-            path: 'secret/esxi/admin',
-            engineVersion: 2,
-            secretValues: [
-              [envVar: 'ARM_USER',       vaultKey: 'user'],
-              [envVar: 'ARM_PASSWORD',   vaultKey: 'password']
-            ]
-          ]]
-        ]) {
-            sh'''
-              cd VmOnPerm
-              terraform init
-              terraform plan
-            '''
-        }
+stage('Plan') {
+  container('terraform') {
+    withVault([
+      vaultSecrets: [[
+        path: 'secret/esxi/admin',
+        engineVersion: 2,
+        secretValues: [
+          [envVar: 'ARM_USER', vaultKey: 'user'],
+          [envVar: 'ARM_PASSWORD', vaultKey: 'password']
+        ]
+      ]]
+    ]) {
+      withEnv(["TF_LOG=DEBUG"]) {  // Set the debug environment variable
+        sh '''
+          cd VmOnPerm
+          terraform init
+          terraform plan
+        '''
       }
     }
+  }
+}
+
   }
 }
